@@ -57,6 +57,12 @@ Installing only a javascript library and with four lines of code.
 - Vue Support component nodes && Nuxt
 
 ## Installation
+
+### Supported tooling
+The build tooling is validated with:
+- Node.js `>=18.18.0`
+- npm `>=9`
+
 Download or clone repository and copy the dist folder, CDN option Or npm.  
 #### Clone
 `git clone https://github.com/jerosoler/Drawflow.git`

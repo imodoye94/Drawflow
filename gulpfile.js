@@ -1,24 +1,23 @@
+const fs = require('fs/promises');
 const gulp = require('gulp');
-const concat = require('gulp-concat');
-const minifyCSS = require('gulp-minify-css');
-const replace = require('gulp-replace');
+const CleanCSS = require('clean-css');
 
-gulp.task('style', () => {
-  return gulp.src('dist/drawflow.min.css')
-  .pipe(replace(/^(.*)$/, 'import {css} from "lit-element"; export const style = css`$1`;'))
-  .pipe(concat('drawflow.style.js'))
-  .pipe(gulp.dest('dist/'))
+gulp.task('css', async () => {
+  const sourceCss = await fs.readFile('src/drawflow.css', 'utf8');
+  const minified = new CleanCSS().minify(sourceCss);
+
+  if (minified.errors.length) {
+    throw new Error(minified.errors.join('\n'));
+  }
+
+  await fs.writeFile('dist/drawflow.min.css', minified.styles);
 });
 
-gulp.task('css', () => {
-  return gulp.src('src/*.css')
-  .pipe(minifyCSS())
-  .pipe(concat('drawflow.min.css'))
-  .pipe(gulp.dest('dist/'))
+gulp.task('style', async () => {
+  const css = await fs.readFile('dist/drawflow.min.css', 'utf8');
+  const escapedCss = css.replace(/`/g, '\\`');
+  const styleModule = `import { css } from "lit-element";\nexport const style = css\`${escapedCss}\`;\n`;
+  await fs.writeFile('dist/drawflow.style.js', styleModule);
 });
 
-gulp.task('default', gulp.series(
-    'css', 
-    'style'
-  )
-);
+gulp.task('default', gulp.series('css', 'style'));
