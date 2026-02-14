@@ -138,6 +138,22 @@ export default class Drawflow {
   }
   /* End Mobile Zoom */
   load() {
+    const modules = this.drawflow && this.drawflow.drawflow;
+
+    if(!modules || typeof modules !== 'object') {
+      console.error('[Drawflow] Invalid drawflow format detected. Reinitializing with default Home module.');
+      this.drawflow = { "drawflow": { "Home": { "data": {} }}};
+      this.module = 'Home';
+    }
+
+    if(!this.drawflow.drawflow[this.module]) {
+      this.recoverModuleSelection();
+      if(!this.drawflow.drawflow[this.module]) {
+        console.error('[Drawflow] Unable to load module data. Module recovery failed.');
+        return;
+      }
+    }
+
     for (var key in this.drawflow.drawflow[this.module].data) {
       this.addNodeImport(this.drawflow.drawflow[this.module].data[key], this.precanvas);
     }
@@ -162,6 +178,33 @@ export default class Drawflow {
       });
     });
     this.nodeId = number;
+  }
+
+  recoverModuleSelection() {
+    if(!this.drawflow || !this.drawflow.drawflow || typeof this.drawflow.drawflow !== 'object') {
+      this.drawflow = { "drawflow": { "Home": { "data": {} }}};
+      this.module = 'Home';
+      return;
+    }
+
+    const modules = this.drawflow.drawflow;
+    if(modules[this.module]) {
+      return;
+    }
+
+    if(modules.Home) {
+      this.module = 'Home';
+      return;
+    }
+
+    const moduleKeys = Object.keys(modules);
+    if(moduleKeys.length > 0) {
+      this.module = moduleKeys[0];
+      return;
+    }
+
+    modules.Home = { "data": {} };
+    this.module = 'Home';
   }
 
   removeReouteConnectionSelected(){
@@ -1887,6 +1930,7 @@ export default class Drawflow {
   import (data, notifi = true) {
     this.clear();
     this.drawflow = JSON.parse(JSON.stringify(data));
+    this.recoverModuleSelection();
     this.load();
     if(notifi) {
       this.dispatch('import', 'import');

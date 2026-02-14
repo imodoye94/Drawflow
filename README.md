@@ -332,6 +332,8 @@ You can export and import your data.
 var exportdata = editor.export();
 editor.import(exportdata);
 ```
+After `import(data)`, Drawflow validates the current active module. If the selected module does not exist in the imported payload, it will fallback to `Home` when available, otherwise to the first imported module key, and if no modules are present it will create a default `Home` module automatically.
+
 ### Export example
 Example of exported data:
 ```json
