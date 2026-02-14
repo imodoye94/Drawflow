@@ -17,7 +17,7 @@ function sanitizeNodeHtml(htmlString) {
         return;
       }
 
-      if ((attributeName === 'href' || attributeName === 'src' || attributeName === 'xlink:href' || attributeName === 'formaction' || attributeName === 'srdoc') && blockedSchemes.test(attributeValue)) {
+      if ((attributeName === 'href' || attributeName === 'src' || attributeName === 'xlink:href' || attributeName === 'formaction' || attributeName === 'srcdoc') && blockedSchemes.test(attributeValue)) {
         element.removeAttribute(attribute.name);
       }
     });
