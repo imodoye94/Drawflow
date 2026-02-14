@@ -1862,11 +1862,17 @@ export default class Drawflow {
   }
 
   removeModule(name) {
+    if(name === 'Home') {
+      this.dispatch('moduleRemoveBlocked', { name: name, reason: 'Home module is reserved and cannot be removed' });
+      return false;
+    }
+
     if(this.module === name) {
       this.changeModule('Home');
     }
     delete this.drawflow.drawflow[name];
     this.dispatch('moduleRemoved', name);
+    return true;
   }
 
   clearModuleSelected() {

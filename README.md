@@ -191,10 +191,12 @@ Separate your flows in different editors.
 ```javascript
 editor.addModule('nameNewModule');
 editor.changeModule('nameNewModule');
-editor.removeModule('nameModule');
-// Default Module is Home
+editor.removeModule('nameModule'); // returns true when removed, false when blocked
+// Default Module is Home (reserved and non-removable)
 editor.changeModule('Home');
 ```
+`removeModule('Home')` is blocked because `Home` is reserved and cannot be removed.
+`removeModule(name)` returns `true` when the module is removed and `false` when deletion is blocked.
 `RemovedModule` if it is in the same module redirects to the `Home` module
 
 
@@ -308,6 +310,7 @@ Event | Return | Description
   `moduleCreated` | name | `name` of Module
   `moduleChanged` | name | `name` of Module
   `moduleRemoved` | name | `name` of Module
+  `moduleRemoveBlocked` | { name, reason } | module removal blocked (for example, `Home`)
   `click` | event | Click event
   `clickEnd` | event | Once the click changes have been made
   `contextmenu` | event | Click second button mouse event
