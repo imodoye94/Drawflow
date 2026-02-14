@@ -1,3 +1,31 @@
+function sanitizeNodeHtml(htmlString) {
+  const template = document.createElement('template');
+  template.innerHTML = typeof htmlString === 'string' ? htmlString : '';
+
+  template.content.querySelectorAll('script').forEach((scriptElement) => {
+    scriptElement.remove();
+  });
+
+  const blockedSchemes = /^(javascript|vbscript|data|file):/i;
+  template.content.querySelectorAll('*').forEach((element) => {
+    Array.from(element.attributes).forEach((attribute) => {
+      const attributeName = attribute.name.toLowerCase();
+      const attributeValue = attribute.value.trim();
+
+      if (attributeName.startsWith('on')) {
+        element.removeAttribute(attribute.name);
+        return;
+      }
+
+      if ((attributeName === 'href' || attributeName === 'src' || attributeName === 'xlink:href' || attributeName === 'formaction' || attributeName === 'srcdoc') && blockedSchemes.test(attributeValue)) {
+        element.removeAttribute(attribute.name);
+      }
+    });
+  });
+
+  return template.innerHTML;
+}
+
 export default class Drawflow {
   constructor(container, render = null, parent = null) {
     this.events = {};
@@ -31,6 +59,7 @@ export default class Drawflow {
     this.force_first_input = false;
     this.draggable_inputs = true;
     this.useuuid = false;
+    this.strict_mode = false;
     this.parent = parent;
 
     this.noderegister = {};
@@ -1224,7 +1253,11 @@ export default class Drawflow {
     const content = document.createElement('div');
     content.classList.add("drawflow_content_node");
     if(typenode === false) {
-      content.innerHTML = html;
+      if(this.strict_mode) {
+        content.textContent = typeof html === 'string' ? html : '';
+      } else {
+        content.innerHTML = sanitizeNodeHtml(html);
+      }
     } else if (typenode === true) {
       content.appendChild(this.noderegister[html].html.cloneNode(true));
     } else {
@@ -1362,7 +1395,11 @@ export default class Drawflow {
     content.classList.add("drawflow_content_node");
 
     if(dataNode.typenode === false) {
-      content.innerHTML = dataNode.html;
+      if(this.strict_mode) {
+        content.textContent = typeof dataNode.html === 'string' ? dataNode.html : '';
+      } else {
+        content.innerHTML = sanitizeNodeHtml(dataNode.html);
+      }
     } else if (dataNode.typenode === true) {
       content.appendChild(this.noderegister[dataNode.html].html.cloneNode(true));
     } else {

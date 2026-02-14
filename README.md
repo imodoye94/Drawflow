@@ -178,6 +178,7 @@ Parameter | Type | Default | Description
 `zoom_last_value` | Number | 1 | Default zoom last value
 `draggable_inputs` | Boolean | true | Drag nodes on click inputs
 `useuuid` | Boolean | false | Use UUID as node ID instead of integer index. Only affect newly created nodes, do not affect imported nodes
+`strict_mode` | Boolean | false | Disable raw HTML rendering for `typenode === false` and render html strings as plain text instead
 
 ### Reroute
 Active reroute connections. Use before `start` or `import`.
@@ -332,6 +333,9 @@ You can export and import your data.
 var exportdata = editor.export();
 editor.import(exportdata);
 ```
+
+> ⚠️ Security note: Importing untrusted flow JSON is unsafe if node `html` contains malicious markup. By default Drawflow sanitizes script tags, inline event handlers (`on*`), and dangerous URL schemes in common URL attributes, but security-sensitive integrations should additionally enable `editor.strict_mode = true` to disallow raw HTML rendering for `typenode === false` nodes.
+
 ### Export example
 Example of exported data:
 ```json
