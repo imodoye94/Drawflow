@@ -350,8 +350,8 @@ export default class Drawflow {
       this.updateConnection(e_pos_x, e_pos_y);
     }
     if(this.editor_selected) {
-      x =  this.canvas_x + (-(this.pos_x - e_pos_x))
-      y = this.canvas_y + (-(this.pos_y - e_pos_y))
+      const x =  this.canvas_x + (-(this.pos_x - e_pos_x))
+      const y = this.canvas_y + (-(this.pos_y - e_pos_y))
       this.dispatch('translate', { x: x, y: y});
       this.precanvas.style.transform = "translate("+x+"px, "+y+"px) scale("+this.zoom+")";
     }
